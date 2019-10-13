@@ -1,4 +1,6 @@
-process.env.TZ = 'UTC'
+const setTZ = require('set-tz')
+setTZ('UTC')
+//process.env.TZ = 'UTC'
 process.env.NODE_ENV = 'test'
 
 require('dotenv').config()
