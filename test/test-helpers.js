@@ -251,7 +251,7 @@ function seedUsers(db, users) {
 function seedThingsTables(db, users, things, reviews=[]) {
   return db.transaction(async trx => {
     await seedUsers(trx, users)
-    await trx.into('thingul_users').insert(things)
+    await trx.into('thingful_users').insert(things)
 
     await trx.raw(
       `SELECT setval('thingful_things_id_seq', ?)`,
