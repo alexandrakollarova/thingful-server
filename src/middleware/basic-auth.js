@@ -12,13 +12,13 @@ function requireAuth(req, res, next) {
 
   const [tokenUserName, tokenPassword] = AuthService.parseBasicToken(basicToken)
 
-  if (!tokenUserName || !tokenPassword) {
+  if (!tokenUserName || !tokenPassword) {    
     return res.status(401).json({ error: 'Unauthorized request' })
   }
 
   AuthService.getUserWithUserName(
     req.app.get('db'),
-    tokenUserName
+    tokenUserName,
   )
     .then(user => {
       if (!user || user.password !== tokenPassword) {
