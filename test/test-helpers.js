@@ -224,12 +224,24 @@ function makeThingsFixtures() {
 }
 
 function cleanTables(db) {
-  return db.raw(
-    `TRUNCATE
-      thingful_things,
-      thingful_users,
-      thingful_reviews
-      RESTART IDENTITY CASCADE`
+  return db.transaction(trx => 
+    trx.raw(
+      `TRUNCATE
+        thingful_things,
+        thingful_users,
+        thingful_reviews
+      `
+    )
+    .then(() =>
+      Promise.all([
+        trx.raw(`ALTER SEQUENCE thingful_things minvalue 0 START WITH 1`),
+        trx.raw(`ALTER SEQUENCE thingful_users_id_seq minvalue 0 START WITH 1`),
+        trx.raw(`ALTER SEQUENCE thingful_reviews_id_seq minvalue 0 START WITH 1`),
+        trx.raw(`SELECT setval('thingful_things_id_seq', 0)`),
+        trx.raw(`SELECT setval('thingful_users_id_seq', 0)`),
+        trx.raw(`SELECT setval('thingful_reviews_id_seq', 0)`),
+      ])
+    )
   )
 }
 
@@ -238,9 +250,9 @@ function seedUsers(db, users) {
     ...user,
     password: bcrypt.hashSync(user.password, 1)
   }))
+
   return db.into('thingful_users').insert(preppedUsers)
     .then(() =>
-    // update the auto sequence to stay in sync
       db.raw(
         `SELECT setval('thingful_users_id_seq', ?)`,
         [users[users.length - 1].id],
@@ -251,14 +263,20 @@ function seedUsers(db, users) {
 function seedThingsTables(db, users, things, reviews=[]) {
   return db.transaction(async trx => {
     await seedUsers(trx, users)
-    await trx.into('thingful_users').insert(things)
-
+    await trx.into('thingful_things').insert(things)
     await trx.raw(
       `SELECT setval('thingful_things_id_seq', ?)`,
       [things[things.length - 1].id],
     )
+
+    if (reviews.length) {
+      await trx.into('thingful_reviews').insert(reviews)
+      await trx.raw(
+        `SELECT setval('thingful_reviews_id_seq', ?)`,
+        [reviews[reviews.length - 1].id],
+      )
+    }
   })  
- 
 }
 
 function seedMaliciousThing(db, user, thing) {

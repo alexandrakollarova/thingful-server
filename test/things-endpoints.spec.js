@@ -1,8 +1,9 @@
 const knex = require('knex')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
+const {TEST_DB_URL} = require('../src/config')
 
-describe('Things Endpoints', function() {
+describe.only('Things Endpoints', function() {
   let db
 
   const {
@@ -14,13 +15,13 @@ describe('Things Endpoints', function() {
   before('make knex instance', () => {
     db = knex({
       client: 'pg',
-      connection: process.env.TEST_DB_URL,
+      connection: TEST_DB_URL,
     })
     app.set('db', db)
   })
 
   after('disconnect from db', () => db.destroy())
-
+console.log(db)
   before('cleanup', () => helpers.cleanTables(db))
 
   afterEach('cleanup', () => helpers.cleanTables(db))
