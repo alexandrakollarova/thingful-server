@@ -3,7 +3,7 @@ const app = require('../src/app')
 const helpers = require('./test-helpers')
 const {TEST_DB_URL} = require('../src/config')
 
-describe.only('Things Endpoints', function() {
+describe('Things Endpoints', function() {
   let db
 
   const {
@@ -21,7 +21,7 @@ describe.only('Things Endpoints', function() {
   })
 
   after('disconnect from db', () => db.destroy())
-console.log(db)
+
   before('cleanup', () => helpers.cleanTables(db))
 
   afterEach('cleanup', () => helpers.cleanTables(db))

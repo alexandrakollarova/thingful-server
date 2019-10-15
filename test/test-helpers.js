@@ -234,7 +234,7 @@ function cleanTables(db) {
     )
     .then(() =>
       Promise.all([
-        trx.raw(`ALTER SEQUENCE thingful_things minvalue 0 START WITH 1`),
+        trx.raw(`ALTER SEQUENCE thingful_things_id_seq minvalue 0 START WITH 1`),
         trx.raw(`ALTER SEQUENCE thingful_users_id_seq minvalue 0 START WITH 1`),
         trx.raw(`ALTER SEQUENCE thingful_reviews_id_seq minvalue 0 START WITH 1`),
         trx.raw(`SELECT setval('thingful_things_id_seq', 0)`),
